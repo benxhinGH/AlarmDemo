@@ -15,7 +15,8 @@ public class Alarm {
     private int type;
     private String stringTime;
 
-    public Alarm(int hour,int minute,int type){
+    public Alarm(int id,int hour,int minute,int type){
+        this.id=id;
         this.hour=hour;
         this.minute=minute;
         this.type=type;

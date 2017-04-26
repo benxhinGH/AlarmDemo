@@ -12,9 +12,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/timePicker" />
-    <Button
+
+    <Spinner
+        android:layout_marginTop="20dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/set_alarm_btn"
-        android:text="设置闹钟"/>
+        android:paddingLeft="20dp"
+        android:id="@+id/type_spinner"
+        android:entries="@array/alarm_type"/>
+
+
 </LinearLayout>
