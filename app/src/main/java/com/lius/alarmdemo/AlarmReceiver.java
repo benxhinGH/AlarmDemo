@@ -13,5 +13,7 @@ public class AlarmReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         Toast.makeText(context, "收到闹钟广播", Toast.LENGTH_SHORT).show();
+        MyAlarmManager.getInstance().triggerAlarm();
+
     }
 }

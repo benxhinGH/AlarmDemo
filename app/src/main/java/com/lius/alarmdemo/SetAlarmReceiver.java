@@ -13,15 +13,13 @@ import android.widget.Toast;
 public class SetAlarmReceiver extends BroadcastReceiver{
     @Override
     public void onReceive(Context context, Intent intent) {
-        int alarmId=intent.getIntExtra("alarmId",-1);
+        int alarmPosition=intent.getIntExtra("alarmPosition",-1);
         switch (intent.getAction()){
             case "com.lius.alarmdemo.openalarm":
-                Toast.makeText(context, "收到打开闹钟广播，id为:"+alarmId, Toast.LENGTH_SHORT).show();
-                AlarmListManager.changeItemColor(alarmId, Color.BLACK);
+                MyAlarmManager.getInstance().openAlarm(alarmPosition);
                 break;
             case "com.lius.alarmdemo.closealarm":
-                Toast.makeText(context, "收到关闭闹钟广播，id为:"+alarmId, Toast.LENGTH_SHORT).show();
-                AlarmListManager.changeItemColor(alarmId,0x55000000);
+                MyAlarmManager.getInstance().cancelAlarm(alarmPosition);
                 break;
             default:
                 break;

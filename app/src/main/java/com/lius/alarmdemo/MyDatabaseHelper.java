@@ -14,7 +14,8 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
             +"id integer primary key autoincrement,"
             +"hour integer,"
             +"minute integer,"
-            +"type integer)";
+            +"type integer,"
+            +"status integer)";
 
 
     public MyDatabaseHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {

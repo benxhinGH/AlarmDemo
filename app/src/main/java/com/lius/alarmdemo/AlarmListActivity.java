@@ -1,11 +1,14 @@
 package com.lius.alarmdemo;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,12 +25,12 @@ import java.util.List;
 
 public class AlarmListActivity extends AppCompatActivity {
 
-    public static ListView alarmLv;
+    private ListView alarmLv;
     private Toolbar toolbar;
     private MyDatabaseHelper myDatabaseHelper;
     private MyAlarmManager myAlarmManager;
     private List<Alarm> alarmListDatas;
-    private AlarmListAdapter alarmListAdapter;
+    public static AlarmListAdapter alarmListAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,21 +52,10 @@ public class AlarmListActivity extends AppCompatActivity {
         alarmLv=(ListView)findViewById(R.id.alarm_list);
     }
 
-    private List<Alarm> getDatas(){
-        List<Alarm> list=new ArrayList<>();
-        list.add(new Alarm(0,1,1,Alarm.ONCE));
-        list.add(new Alarm(1,2,2,Alarm.EVERYDAY));
-        list.add(new Alarm(2,10,12,Alarm.ONCE));
-        list.add(new Alarm(3,23,59,Alarm.EVERYDAY));
-        list.add(new Alarm(4,3,3,Alarm.EVERYDAY));
-        list.add(new Alarm(5,4,4,Alarm.ONCE));
-        list.add(new Alarm(6,5,5,Alarm.EVERYDAY));
-        list.add(new Alarm(7,10,10,Alarm.ONCE));
-        return list;
-    }
 
     private void initDatas(){
         myAlarmManager=MyAlarmManager.getInstance();
+        myAlarmManager.setContext(MyApplication.getContext());
         myDatabaseHelper=new MyDatabaseHelper(this,"Alarm.db",null,1);
         SQLiteDatabase database=myDatabaseHelper.getReadableDatabase();
         Cursor cursor=database.query("Alarm",null,null,null,null,null,null);
@@ -72,12 +64,14 @@ public class AlarmListActivity extends AppCompatActivity {
             int hour;
             int minute;
             int type;
+            int status;
             do{
                 id=cursor.getInt(0);
                 hour=cursor.getInt(1);
                 minute=cursor.getInt(2);
                 type=cursor.getInt(3);
-                myAlarmManager.addAlarm(new Alarm(id,hour,minute,type));
+                status=cursor.getInt(4);
+                myAlarmManager.addAlarm(new Alarm(id,hour,minute,type,status));
             }while (cursor.moveToNext());
         }
         cursor.close();
@@ -87,13 +81,27 @@ public class AlarmListActivity extends AppCompatActivity {
 
         alarmListAdapter=new AlarmListAdapter(this,alarmListDatas);
         alarmLv.setAdapter(alarmListAdapter);
+        if(myAlarmManager.getCurrentRunningAlarm()==null)myAlarmManager.setNextAlarm();
     }
 
     private void setListeners(){
-        alarmLv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        alarmLv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(AlarmListActivity.this, "点击item:"+position, Toast.LENGTH_SHORT).show();
+            public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
+                AlertDialog.Builder builder=new AlertDialog.Builder(AlarmListActivity.this);
+                builder.setTitle("提示");
+                builder.setMessage("确定删除此闹钟？");
+                builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Alarm alarm=alarmListDatas.get(position);
+                        myAlarmManager.removeAlarm(alarm);
+                        alarmListAdapter.notifyDataSetChanged();
+                    }
+                });
+                builder.setNegativeButton("取消", null);
+                builder.show();
+                return true;
             }
         });
     }
@@ -128,11 +136,12 @@ public class AlarmListActivity extends AppCompatActivity {
                         int hour=cursor.getInt(1);
                         int minute=cursor.getInt(2);
                         int type=cursor.getInt(3);
-                        myAlarmManager.addAlarm(new Alarm(id,hour,minute,type));
+                        int status=cursor.getInt(4);
+                        myAlarmManager.addAlarm(new Alarm(id,hour,minute,type,status));
                     }
                     cursor.close();
-                    alarmListDatas=myAlarmManager.getAlarmList();
                     alarmListAdapter.notifyDataSetChanged();
+
                 }
                 break;
             default:

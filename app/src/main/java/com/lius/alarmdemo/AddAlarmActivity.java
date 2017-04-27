@@ -68,8 +68,9 @@ public class AddAlarmActivity extends AppCompatActivity {
                 contentValues.put("hour",timePicker.getCurrentHour());
                 contentValues.put("minute",timePicker.getCurrentMinute());
                 String typeStr=getResources().getStringArray(R.array.alarm_type)[(int)typeSpinner.getSelectedItemId()];
-                if(typeStr.equals("一次"))contentValues.put("type",0);
-                else if(typeStr.equals("每天"))contentValues.put("type",1);
+                if(typeStr.equals("一次"))contentValues.put("type",Alarm.ONCE);
+                else if(typeStr.equals("每天"))contentValues.put("type",Alarm.EVERYDAY);
+                contentValues.put("status",Alarm.RUN);
                 database.insert("Alarm",null,contentValues);
                 Log.d("AddAlarmActivity","点击confirmAction");
                 setResult(RESULT_OK);

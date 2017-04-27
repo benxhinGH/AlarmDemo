@@ -25,6 +25,8 @@ import java.util.Map;
 
 public class AlarmListAdapter extends BaseAdapter {
 
+    private Map<Integer,View> viewBuffer=new HashMap<>();
+
 
     private List<Alarm> listDatas;
     private Context context;
@@ -81,21 +83,39 @@ public class AlarmListAdapter extends BaseAdapter {
             default:
                 break;
         }
+
+        if(listDatas.get(position).getStatus()==Alarm.RUN){
+            viewHolder.alarmSwitch.setChecked(true);
+            viewHolder.alarmTimeTv.setTextColor(Color.BLACK);
+            viewHolder.alarmTypeTv.setTextColor(Color.BLACK);
+        }
+        else if(listDatas.get(position).getStatus()==Alarm.STOP){
+            viewHolder.alarmSwitch.setChecked(false);
+            viewHolder.alarmTimeTv.setTextColor(0x55000000);
+            viewHolder.alarmTypeTv.setTextColor(0x55000000);
+        }
+
         viewHolder.alarmSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if(isChecked){
                     Intent intent=new Intent("com.lius.alarmdemo.openalarm");
-                    intent.putExtra("alarmId",position);
+                    setTextColor(position,Color.BLACK);
+                    intent.putExtra("alarmPosition",position);
                     context.sendBroadcast(intent);
 
                 }else{
                     Intent intent=new Intent("com.lius.alarmdemo.closealarm");
-                    intent.putExtra("alarmId",position);
+                    setTextColor(position,0x55000000);
+                    intent.putExtra("alarmPosition",position);
                     context.sendBroadcast(intent);
                 }
             }
         });
+
+
+
+        viewBuffer.put(position,convertView);
 
         return convertView;
     }
@@ -103,5 +123,15 @@ public class AlarmListAdapter extends BaseAdapter {
         public TextView alarmTimeTv;
         public TextView alarmTypeTv;
         public Switch alarmSwitch;
+    }
+    public void setTextColor(int viewPosition,int color){
+        TextView alarmTimeTv=(TextView)viewBuffer.get(viewPosition).findViewById(R.id.alarm_time);
+        TextView alarmTypeTv=(TextView)viewBuffer.get(viewPosition).findViewById(R.id.alarm_type);
+        alarmTimeTv.setTextColor(color);
+        alarmTypeTv.setTextColor(color);
+    }
+    public void setSwitch(int viewPosition,boolean status){
+        Switch mSwitch=(Switch)viewBuffer.get(viewPosition).findViewById(R.id.alarm_switch);
+        mSwitch.setChecked(status);
     }
 }
