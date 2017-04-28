@@ -1,22 +1,28 @@
-package com.lius.alarmdemo;
+package com.lius.alarmdemo.activity;
 
+import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
 
-import java.util.ArrayList;
+import com.lius.alarmdemo.model.Alarm;
+import com.lius.alarmdemo.adapter.AlarmListAdapter;
+import com.lius.alarmdemo.control.MyAlarmManager;
+import com.lius.alarmdemo.util.MyApplication;
+import com.lius.alarmdemo.util.MyDatabaseHelper;
+import com.lius.alarmdemo.R;
+
 import java.util.List;
 
 /**
@@ -44,6 +50,9 @@ public class AlarmListActivity extends AppCompatActivity {
 
         setListeners();
 
+        String[] strings={Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.WRITE_EXTERNAL_STORAGE};
+        ActivityCompat.requestPermissions(this,strings,1);
+
 
     }
 
@@ -55,7 +64,7 @@ public class AlarmListActivity extends AppCompatActivity {
 
     private void initDatas(){
         myAlarmManager=MyAlarmManager.getInstance();
-        myAlarmManager.setContext(MyApplication.getContext());
+        myAlarmManager.setContext(this);
         myDatabaseHelper=new MyDatabaseHelper(this,"Alarm.db",null,1);
         SQLiteDatabase database=myDatabaseHelper.getReadableDatabase();
         Cursor cursor=database.query("Alarm",null,null,null,null,null,null);

@@ -1,4 +1,6 @@
-package com.lius.alarmdemo;
+package com.lius.alarmdemo.model;
+
+import android.util.Log;
 
 /**
  * Created by Administrator on 2017/4/25 0025.
@@ -34,6 +36,7 @@ public class Alarm {
     }
 
     public void setStatus(int status) {
+        Log.d("Alarm","alarm"+id+"时间为："+stringTime+"的status改变，旧值为"+this.status+"新值为"+status);
         this.status = status;
     }
 
@@ -58,6 +61,7 @@ public class Alarm {
     }
 
     public void setType(int type) {
+
         this.type = type;
     }
 

@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".AlarmListActivity">
+    tools:context=".activity.AlarmListActivity">
     <item
         android:id="@+id/action_add_alarm"
         android:title="添加闹钟"

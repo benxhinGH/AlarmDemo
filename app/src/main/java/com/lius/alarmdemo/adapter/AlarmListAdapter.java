@@ -1,4 +1,4 @@
-package com.lius.alarmdemo;
+package com.lius.alarmdemo.adapter;
 
 import android.content.Context;
 import android.content.Intent;
@@ -8,12 +8,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import com.lius.alarmdemo.control.MyAlarmManager;
+import com.lius.alarmdemo.model.Alarm;
+import com.lius.alarmdemo.R;
 
 import java.util.HashMap;
 import java.util.List;
@@ -40,7 +42,6 @@ public class AlarmListAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        Log.d("AlarmListAdapter","getCount:"+listDatas.size());
         return listDatas.size();
     }
 
@@ -56,13 +57,10 @@ public class AlarmListAdapter extends BaseAdapter {
 
     @NonNull
     @Override
-    public View getView(final int position, View convertView, ViewGroup parent) {
-        Log.d("AlarmListAdapter","getView,position:"+position);
+    public View getView(final int position, View convertView, final ViewGroup parent) {
         ViewHolder viewHolder=null;
-
         if(convertView==null){
             convertView=LayoutInflater.from(context).inflate(R.layout.alarm_list_item,null);
-            Log.d("AlarmListAdapter","convertView is null,position:"+position);
             viewHolder=new ViewHolder();
             viewHolder.alarmTimeTv=(TextView)convertView.findViewById(R.id.alarm_time);
             viewHolder.alarmTypeTv=(TextView)convertView.findViewById(R.id.alarm_type);
@@ -70,6 +68,8 @@ public class AlarmListAdapter extends BaseAdapter {
             convertView.setTag(viewHolder);
         }else{
             viewHolder=(ViewHolder)convertView.getTag();
+            //先清除convertView中switch的OnCheckedChangeListener否则下面setChecked时会出错
+            viewHolder.alarmSwitch.setOnCheckedChangeListener(null);
         }
 
         viewHolder.alarmTimeTv.setText(listDatas.get(position).getStringTime());
@@ -84,7 +84,8 @@ public class AlarmListAdapter extends BaseAdapter {
                 break;
         }
 
-        if(listDatas.get(position).getStatus()==Alarm.RUN){
+        Alarm alarm=listDatas.get(position);
+        if(alarm.getStatus()==Alarm.RUN){
             viewHolder.alarmSwitch.setChecked(true);
             viewHolder.alarmTimeTv.setTextColor(Color.BLACK);
             viewHolder.alarmTypeTv.setTextColor(Color.BLACK);
@@ -98,6 +99,7 @@ public class AlarmListAdapter extends BaseAdapter {
         viewHolder.alarmSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
                 if(isChecked){
                     Intent intent=new Intent("com.lius.alarmdemo.openalarm");
                     setTextColor(position,Color.BLACK);
@@ -134,4 +136,5 @@ public class AlarmListAdapter extends BaseAdapter {
         Switch mSwitch=(Switch)viewBuffer.get(viewPosition).findViewById(R.id.alarm_switch);
         mSwitch.setChecked(status);
     }
+
 }

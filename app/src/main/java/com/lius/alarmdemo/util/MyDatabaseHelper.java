@@ -1,4 +1,4 @@
-package com.lius.alarmdemo;
+package com.lius.alarmdemo.util;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;

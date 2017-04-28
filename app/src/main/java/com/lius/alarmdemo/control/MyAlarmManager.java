@@ -1,15 +1,24 @@
-package com.lius.alarmdemo;
+package com.lius.alarmdemo.control;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Environment;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 
+import com.lius.alarmdemo.service.SoundService;
+import com.lius.alarmdemo.util.MyDatabaseHelper;
+import com.lius.alarmdemo.activity.AlarmListActivity;
+import com.lius.alarmdemo.model.Alarm;
+import com.lius.alarmdemo.receiver.AlarmReceiver;
+
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -28,7 +37,6 @@ public class MyAlarmManager {
 
     private MyDatabaseHelper myDatabaseHelper;
 
-    private boolean isNextDay=false;
 
 
     public static MyAlarmManager getInstance() {
@@ -123,6 +131,7 @@ public class MyAlarmManager {
         database.execSQL("update Alarm set status=0 where id=" + alarm.getId());
         setNextAlarm();
 
+
     }
 
     public void setNextAlarm() {
@@ -200,6 +209,25 @@ public class MyAlarmManager {
 
     public void triggerAlarm(){
         Log.d("MyAlarmManager","触发当前闹钟："+currentRunningAlarm.getStringTime());
+
+        Intent intent=new Intent(context, SoundService.class);
+        String soundPath= "sdcard/BackInTime.mp3";
+        Log.d("MyAlarmManager","文件路径为："+soundPath);
+
+        intent.putExtra("soundpath",soundPath);
+        context.startService(intent);
+        AlertDialog.Builder builder=new AlertDialog.Builder(context);
+        builder.setTitle("闹钟");
+        builder.setMessage(currentRunningAlarm.getStringTime());
+        builder.setPositiveButton("关闭闹钟", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                context.stopService(new Intent(context,SoundService.class));
+            }
+        });
+        builder.show();
+
+
         if(currentRunningAlarm.getType()==Alarm.ONCE){
             int position=alarmList.indexOf(currentRunningAlarm);
             cancelAlarm(position);
@@ -208,6 +236,7 @@ public class MyAlarmManager {
         }
         setNextAlarm();
 
+
     }
     private MyDatabaseHelper getMyDatabaseHelper(){
         if(myDatabaseHelper==null){
@@ -215,6 +244,8 @@ public class MyAlarmManager {
         }
         return myDatabaseHelper;
     }
+
+
 
 
 }

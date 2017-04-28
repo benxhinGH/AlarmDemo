@@ -1,10 +1,6 @@
-package com.lius.alarmdemo;
+package com.lius.alarmdemo.activity;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.content.ContentValues;
-import android.content.Context;
-import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -12,13 +8,12 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TimePicker;
-import android.widget.Toast;
 
-import java.util.Calendar;
+import com.lius.alarmdemo.model.Alarm;
+import com.lius.alarmdemo.util.MyDatabaseHelper;
+import com.lius.alarmdemo.R;
 
 /**
  * Created by Administrator on 2017/4/25 0025.
@@ -68,7 +63,7 @@ public class AddAlarmActivity extends AppCompatActivity {
                 contentValues.put("hour",timePicker.getCurrentHour());
                 contentValues.put("minute",timePicker.getCurrentMinute());
                 String typeStr=getResources().getStringArray(R.array.alarm_type)[(int)typeSpinner.getSelectedItemId()];
-                if(typeStr.equals("一次"))contentValues.put("type",Alarm.ONCE);
+                if(typeStr.equals("一次"))contentValues.put("type", Alarm.ONCE);
                 else if(typeStr.equals("每天"))contentValues.put("type",Alarm.EVERYDAY);
                 contentValues.put("status",Alarm.RUN);
                 database.insert("Alarm",null,contentValues);
